@@ -3,6 +3,38 @@
 
 set -e
 
+# Define VM name
+VM_NAME="eks-vm"
+
+# Function to destroy the VM and clean up
+destroy() {
+    echo "Destroying MicroEKS environment..."
+    
+    # Check if the VM exists before attempting to delete
+    if multipass info "$VM_NAME" &>/dev/null; then
+        echo "Deleting VM '$VM_NAME'..."
+        multipass delete "$VM_NAME"
+        multipass purge
+        echo "VM deleted successfully."
+    else
+        echo "VM '$VM_NAME' does not exist. Nothing to delete."
+    fi
+    
+    # Clean up kubeconfig
+    if [ -f ~/.kube/config-microk8s ]; then
+        echo "Removing kubeconfig file..."
+        rm ~/.kube/config-microk8s
+    fi
+    
+    echo "MicroEKS environment destroyed successfully."
+    exit 0
+}
+
+# Check for destroy argument
+if [ "$1" == "destroy" ]; then
+    destroy
+fi
+
 # Check if running on macOS
 if [[ "$(uname)" != "Darwin" ]]; then
     echo "This script only supports macOS."
@@ -89,7 +121,7 @@ fi
 chmod 600 ~/.kube/config-microk8s
 
 echo "======================================================================================"
-echo "MicroK8s (EKS-like distribution) has been successfully installed in the VM!"
+echo "MicroEKS has been successfully installed in the VM!"
 echo ""
 echo "To use kubectl with this cluster, run:"
 echo "export KUBECONFIG=~/.kube/config-microk8s"
@@ -100,6 +132,9 @@ echo ""
 echo "To access the Kubernetes dashboard, run:"
 echo "kubectl port-forward -n kube-system service/kubernetes-dashboard 10443:443"
 echo "Then visit: https://127.0.0.1:10443 in your browser"
+echo ""
+echo "To destroy this environment, run:"
+echo "./deploy.sh destroy"
 echo ""
 echo "VM IP address: $VM_IP"
 echo "======================================================================================"

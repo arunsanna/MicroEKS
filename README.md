@@ -1,10 +1,10 @@
-# EKS Local
+# MicroEKS
 
 A lightweight local Kubernetes environment that mimics an AWS EKS cluster using MicroK8s running in a Multipass virtual machine.
 
 ## Overview
 
-EKS Local provides a simple way to deploy a local Kubernetes environment on macOS that resembles an AWS EKS cluster. It's perfect for:
+MicroEKS provides a simple way to deploy a local Kubernetes environment on macOS that resembles an AWS EKS cluster. It's perfect for:
 
 - Local development and testing of Kubernetes applications
 - Learning Kubernetes without cloud costs
@@ -21,40 +21,70 @@ EKS Local provides a simple way to deploy a local Kubernetes environment on macO
 
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/eks-local.git
-   cd eks-local
+   git clone https://github.com/yourusername/microeks.git
+   cd microeks
    ```
 
 2. Make the deployment script executable:
    ```
-   chmod +x deploy.sh
+   chmod +x micro-eks.sh
    ```
 
 3. Run the deployment script:
    ```
-   ./deploy.sh
+   ./micro-eks.sh
    ```
 
-4. Configure kubectl to use the local cluster:
+4. Follow the interactive menu prompts to create and configure your environment.
+
+5. Configure kubectl to use the local cluster:
    ```
    export KUBECONFIG=~/.kube/config-microk8s
    ```
 
-5. Verify the cluster is working:
+6. Verify the cluster is working:
    ```
    kubectl get nodes
    ```
+
+## Interactive Features
+
+The `micro-eks.sh` script now provides an interactive menu for managing your MicroEKS environment:
+
+- **Create**: Deploy a new VM with customizable memory, disk space, Kubernetes version, and addons
+- **Start**: Start an existing MicroEKS VM
+- **Stop**: Stop a running MicroEKS VM
+- **Destroy**: Remove the VM and clean up resources
+- **Status**: Check the current status of your MicroEKS environment
+
+You can also use command-line arguments for direct access to functions:
+
+```bash
+# Create a new environment with interactive prompts
+./micro-eks.sh create
+
+# Start the environment
+./micro-eks.sh start
+
+# Stop the environment
+./micro-eks.sh stop
+
+# Destroy the environment
+./micro-eks.sh destroy
+
+# Show status
+./micro-eks.sh status
+```
 
 ## Features
 
 - Automatic installation of Multipass VM manager
 - Single VM deployment with MicroK8s Kubernetes
-- Pre-configured with essential Kubernetes addons:
-  - DNS (CoreDNS)
-  - Dashboard
-  - Storage
-  - Ingress
+- Customizable VM resources (memory and disk)
+- Selectable Kubernetes version/channel
+- Configurable Kubernetes addons
 - Automatic kubectl configuration
+- Easy cleanup with a single command
 
 ## Usage Tips
 
@@ -90,6 +120,19 @@ To permanently set the cluster as your default:
 cp ~/.kube/config-microk8s ~/.kube/config
 ```
 
+### Destroying the Environment
+
+When you're done using MicroEKS, you can completely remove it with:
+
+```bash
+./micro-eks.sh destroy
+```
+
+This will:
+- Delete the Multipass VM
+- Remove the kubeconfig file
+- Clean up all related resources
+
 ## Troubleshooting
 
 ### Connection Refused Errors
@@ -104,9 +147,8 @@ If you encounter "connection refused" errors when trying to use kubectl, ensure:
 To completely reset your environment:
 
 ```bash
-multipass delete eks-vm
-multipass purge
-./deploy.sh
+./micro-eks.sh destroy
+./micro-eks.sh create
 ```
 
 ## License
