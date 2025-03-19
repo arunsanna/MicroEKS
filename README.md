@@ -25,31 +25,33 @@ MicroEKS provides a simple way to deploy a local Kubernetes environment on macOS
    cd microeks
    ```
 
-2. Make the deployment script executable:
+2. Make the script executable:
    ```
    chmod +x micro-eks.sh
    ```
 
-3. Run the deployment script:
+3. Run the script:
    ```
    ./micro-eks.sh
    ```
 
-4. Follow the interactive menu prompts to create and configure your environment.
+4. From the interactive menu, select option 1 to create a new environment.
 
-5. Configure kubectl to use the local cluster:
+5. Follow the prompts to configure:
+   - VM memory (default: 16GB)
+   - VM disk space (default: 100GB)
+   - Kubernetes version/channel
+   - MicroK8s addons to enable
+
+6. Once setup completes, use kubectl with the cluster:
    ```
    export KUBECONFIG=~/.kube/config-microk8s
-   ```
-
-6. Verify the cluster is working:
-   ```
    kubectl get nodes
    ```
 
 ## Interactive Features
 
-The `micro-eks.sh` script now provides an interactive menu for managing your MicroEKS environment:
+The `micro-eks.sh` script provides an interactive menu for managing your MicroEKS environment:
 
 - **Create**: Deploy a new VM with customizable memory, disk space, Kubernetes version, and addons
 - **Start**: Start an existing MicroEKS VM
@@ -76,15 +78,34 @@ You can also use command-line arguments for direct access to functions:
 ./micro-eks.sh status
 ```
 
-## Features
+## Customization Options
 
-- Automatic installation of Multipass VM manager
-- Single VM deployment with MicroK8s Kubernetes
-- Customizable VM resources (memory and disk)
-- Selectable Kubernetes version/channel
-- Configurable Kubernetes addons
-- Automatic kubectl configuration
-- Easy cleanup with a single command
+During the creation process, you can customize:
+
+### VM Resources
+- Memory allocation (default: 16GB)
+- Disk space (default: 100GB)
+
+### Kubernetes Version
+Choose from:
+- 1.28/stable (default)
+- 1.29/stable
+- 1.27/stable
+- latest/stable
+- Custom channel
+
+### MicroK8s Addons
+Default addons:
+- dns: CoreDNS
+- dashboard: The Kubernetes dashboard
+- storage: Storage class and default storage pool
+- ingress: Ingress controller
+
+Additional available addons:
+- metallb: Load balancer for bare metal
+- metrics-server: Metrics server for resource metrics
+- host-access: Allow pods to reach the host
+- registry: Private registry
 
 ## Usage Tips
 
@@ -99,17 +120,13 @@ Then visit: https://127.0.0.1:10443 in your browser
 ### Managing the VM
 
 ```bash
-# Stop the VM
-multipass stop eks-vm
+# Using the interactive menu
+./micro-eks.sh
 
-# Start the VM
-multipass start eks-vm
-
-# Get VM info
-multipass info eks-vm
-
-# Shell into the VM
-multipass shell eks-vm
+# Or direct commands
+./micro-eks.sh start
+./micro-eks.sh stop
+./micro-eks.sh status
 ```
 
 ### Permanently Configure kubectl
@@ -138,7 +155,7 @@ This will:
 ### Connection Refused Errors
 
 If you encounter "connection refused" errors when trying to use kubectl, ensure:
-1. The VM is running (`multipass info eks-vm`)
+1. The VM is running (`./micro-eks.sh status` or `multipass info eks-vm`)
 2. Your KUBECONFIG is correctly set
 3. The IP address in ~/.kube/config-microk8s matches the VM's IP (`multipass info eks-vm | grep IPv4`)
 
