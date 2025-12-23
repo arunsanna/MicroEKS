@@ -17,24 +17,21 @@ MicroEKS provides a simple way to deploy a local Kubernetes environment on macOS
 
 ## Build and Install
 
-This project is written in Go. You can build it from source.
+### Homebrew (macOS/Linux)
+You can install MicroEKS using Homebrew:
 
 ```bash
-# Clone the repository
-git clone https://github.com/arunsanna/MicroEKS.git
-cd MicroEKS
-
-# Build locally
-make build
-
-# Run the binary
-./bin/micro-eks --help
+brew install arunsanna/tap/micro-eks
 ```
 
-To create cross-platform release binaries:
+### Manual Installation
+Download the latest binary for your operating system from the [Releases page](https://github.com/arunsanna/MicroEKS/releases).
+
+### Build from Source
+This project uses GitHub Actions for releases. To build locally:
 
 ```bash
-make release
+go build -o bin/micro-eks ./cmd/micro-eks
 ```
 
 ## Quick Start

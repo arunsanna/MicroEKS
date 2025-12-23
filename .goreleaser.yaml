@@ -1,0 +1,82 @@
+version: 2
+
+project_name: micro-eks
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of uname.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    # use zip for windows
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+brews:
+  -
+    # Name of the homebrew tap repository to publish the formula to.
+    # We will assume a standard 'homebrew-tap' repository exists or will be created.
+    repository:
+      owner: arunsanna
+      name: homebrew-tap
+      token: "{{ .Env.GITHUB_TOKEN }}"
+    
+    # The name of the formula.
+    name: micro-eks
+    
+    # Description of the software.
+    description: "A lightweight local Kubernetes environment using Multipass and MicroK8s"
+    
+    # Homepage of the software.
+    homepage: "https://github.com/arunsanna/MicroEKS"
+    
+    # Template for the url.
+    url_template: "https://github.com/arunsanna/MicroEKS/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    # Git author used to commit to the repository.
+    commit_author:
+      name: arunsanna
+      email: arunsanna@users.noreply.github.com
+
+    # Folder inside the repository to put the formula.
+    directory: Formula
+
+    # Tests to run after installation.
+    test: |
+      system "#{bin}/micro-eks --help"
