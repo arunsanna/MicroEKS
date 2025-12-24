@@ -38,7 +38,7 @@ go build -o bin/micro-eks ./cmd/micro-eks
 
 1. **Create** a new environment:
    ```bash
-   ./bin/micro-eks create --memory 16G --disk 100G --channel 1.28/stable
+   micro-eks create --memory 16G --disk 100G --channel 1.28/stable
    ```
 
 2. **Access** the cluster:
@@ -76,7 +76,7 @@ Then visit: https://127.0.0.1:10443 in your browser
 ### Destroying the Environment
 
 ```bash
-./bin/micro-eks destroy
+micro-eks destroy
 ```
 
 This will:
@@ -89,7 +89,7 @@ This will:
 ### Connection Refused Errors
 
 If you encounter "connection refused" errors when trying to use kubectl, ensure:
-1. The VM is running (`./bin/micro-eks status` or `multipass info eks-vm`)
+1. The VM is running (`micro-eks status` or `multipass info eks-vm`)
 2. Your KUBECONFIG is correctly set
 3. The IP address in `~/.kube/config-microk8s` matches the VM's IP (`multipass info eks-vm | grep IPv4`)
 
@@ -98,8 +98,8 @@ If you encounter "connection refused" errors when trying to use kubectl, ensure:
 To completely reset your environment:
 
 ```bash
-./bin/micro-eks destroy
-./bin/micro-eks create
+micro-eks destroy
+micro-eks create
 ```
 
 ## License
